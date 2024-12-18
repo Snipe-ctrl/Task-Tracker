@@ -1,32 +1,26 @@
 [
     {
         "id": 1,
-        "task": {
-            "taskName": "new task name",
-            "description": null,
-            "status": null,
-            "createdAt": null,
-            "updatedAt": null
-        }
+        "taskName": "new task name",
+        "description": null,
+        "status": null,
+        "createdAt": null,
+        "updatedAt": null
     },
     {
         "id": 2,
-        "task": {
-            "taskName": "a nam,e",
-            "description": null,
-            "status": null,
-            "createdAt": null,
-            "updatedAt": null
-        }
+        "taskName": "a nam,e",
+        "description": null,
+        "status": "Completed",
+        "createdAt": null,
+        "updatedAt": null
     },
     {
         "id": 3,
-        "task": {
-            "taskName": "does this still work",
-            "description": null,
-            "status": null,
-            "createdAt": null,
-            "updatedAt": null
-        }
+        "taskName": "does this still work",
+        "description": null,
+        "status": null,
+        "createdAt": null,
+        "updatedAt": null
     }
 ]
