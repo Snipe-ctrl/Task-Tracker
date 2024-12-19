@@ -230,6 +230,32 @@ function listTasks() {
     }
 )};
 
+// list completed task functionality
+function listCompletedTasks() {
+    fs.readFile('tasks.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading file:', err);
+            rl.prompt();
+            return;
+        };
+
+        try {
+            jsonData = JSON.parse(data);
+            const filteredJson = jsonData.filter(item => item.status === 'Completed');
+
+            for (let i = 0; i < filteredJson.length; i++) {
+                console.log(`${filteredJson[i].taskName} - Status: ${filteredJson[i].status} - Id: ${filteredJson[i].id}`);
+            };
+            rl.prompt();
+
+        } catch (parseError) {
+            console.error('Error parsing JSON: ', parseError);
+            rl.prompt();
+        }
+    }
+)};
+
+
 // allows for "" and '' strings as inputs
 function parseInput(input) {
     const regex = /(?:[^\s"]+|"[^"]*"|'[^']*')+/g;
@@ -277,6 +303,10 @@ rl.on('line', (line) => {
             listTasks()
             break;
 
+        case 'list-done':
+            listCompletedTasks();
+            break;
+
         case 'mark-in-progress':
             markInProgress(idArg);
             break;a
@@ -293,6 +323,7 @@ rl.on('line', (line) => {
 
     default:
         console.log(`Unknown command: ${command}`);
+        rl.prompt()
         break;
     }
 
