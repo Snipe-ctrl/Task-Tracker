@@ -110,7 +110,7 @@ function deleteTask(id) {
                 return;
             }
 
-            const updatedJson = JSON.stringify(remainingJson);
+            const updatedJson = JSON.stringify(remainingJson, null, 4);
 
             fs.writeFile('tasks.json', updatedJson, 'utf8', (err) => {
                 if (err) {
@@ -127,6 +127,42 @@ function deleteTask(id) {
         }
 })
 };
+
+// mark task in progress function
+function markInProgress(id) {
+    fs.readFile('tasks.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading file:', err);
+            rl.prompt();
+            return;
+        }
+
+        try {
+            const jsonData = JSON.parse(data);
+            const task = jsonData.find(item => item.id === id);
+
+            if (task) {
+                task.status = 'In progress';
+                const updatedJson = JSON.stringify(jsonData, null, 4);
+                fs.writeFile('tasks.json', updatedJson, 'utf8', (err) => {
+                    if (err) {
+                        console.error('Error writing file: ', err);
+                        return;
+                    } else {
+                        console.log(`Task updated successfully (ID:${id})`);
+                    }
+                    rl.prompt()
+                });
+            } else {
+                console.log(`Task with id: ${id} not found.`);
+            }
+            rl.prompt()
+        }   catch (parseError) {
+                console.error('Error parsing JSON: ', parseError);
+                rl.prompt();
+        }
+}
+)};
 
 // mark task done function
 function markDone(id) {
@@ -240,6 +276,10 @@ rl.on('line', (line) => {
         case 'list':
             listTasks()
             break;
+
+        case 'mark-in-progress':
+            markInProgress(idArg);
+            break;a
 
         case 'mark-done':
 
