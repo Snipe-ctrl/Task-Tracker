@@ -91,6 +91,43 @@ function updateTask(id, updatedTask) {
 }
 )}
 
+// delete task function
+function deleteTask(id) {
+    fs.readFile('tasks.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading file:', err);
+            rl.prompt();
+            return;
+        }
+
+        try {
+            const jsonData = JSON.parse(data);
+            const remainingJson = jsonData.filter(item => item.id !== id);
+
+            if (jsonData.length === remainingJson.length) {
+                console.log(`Task with id: ${id} not found.`);
+                rl.prompt();
+                return;
+            }
+
+            const updatedJson = JSON.stringify(remainingJson);
+
+            fs.writeFile('tasks.json', updatedJson, 'utf8', (err) => {
+                if (err) {
+                    console.error('Error writing file: ', err);
+                    return;
+                } else {
+                    console.log(`Task updated successfully (ID:${id})`);
+                }
+                rl.prompt();
+            })
+        } catch (parseError) {
+            console.error('Error parsing JSON: ', parseError);
+            rl.prompt();
+        }
+})
+};
+
 // mark task done function
 function markDone(id) {
     fs.readFile('tasks.json', 'utf8', (err, data) => {
@@ -177,7 +214,6 @@ rl.on('line', (line) => {
     switch (command) {
 
         case 'add':
-
             // variables for add function
             const rest = args.slice(1);
             const taskName = rest.join(' ');
@@ -190,12 +226,15 @@ rl.on('line', (line) => {
             break;
 
         case 'update':
-
             if (restUpdate.length > 0) {
                 updateTask(idArg, taskNameUpdate);
             } else {
                 console.log('No task added. Please provide a task name.');
             }
+            break;
+
+        case 'delete':
+            deleteTask(idArg);
             break;
 
         case 'list':
@@ -206,6 +245,11 @@ rl.on('line', (line) => {
 
             markDone(idArg);
             break;
+
+        case 'quit':
+            console.log('Goodbye!');
+            rl.close();
+            process.exit(0);
 
     default:
         console.log(`Unknown command: ${command}`);
