@@ -16,13 +16,14 @@ function addTask(task) {
     fs.readFile('tasks.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading file:', err)
+            rl.prompt();
             return;
         }
 
         try {
             let jsonData = JSON.parse(data);
 
-            newId = jsonData.length > 0 ? jsonData[jsonData.length - 1].id + 1 : 1;
+            const newId = jsonData.length > 0 ? jsonData[jsonData.length - 1].id + 1 : 1;
 
             const newTask = { 
                     id: newId,
@@ -42,10 +43,12 @@ function addTask(task) {
                     return;
                 }
                 console.log(`Task added successfully (ID: ${newTask.id})`)
-            })
+                rl.prompt();
+            }) 
         }
         catch (parseError) {
             console.error('Error parsing JSON: ', parseError);
+            rl.prompt();
         }
     })
 }
@@ -55,6 +58,7 @@ function updateTask(id, updatedTask) {
     fs.readFile('tasks.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading file:', err);
+            rl.prompt();
             return;
         }
 
@@ -73,21 +77,26 @@ function updateTask(id, updatedTask) {
                     } else {
                         console.log(`Task updated successfully (ID:${id})`);
                     }
+                    rl.prompt();
                 })
             } else {
                 console.log(`Task with id: ${id} not found.`)
             }
+            rl.prompt();
 
         } catch (parseError) {
             console.error('Error parsing JSON: ', parseError);
+            rl.prompt();
         }
 }
 )}
 
+// mark task done function
 function markDone(id) {
     fs.readFile('tasks.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading file:', err);
+            rl.prompt();
             return;
         }
 
@@ -98,7 +107,7 @@ function markDone(id) {
 
             if (task) {
                 task.status = 'Completed';
-                updatedJson = JSON.stringify(jsonData, null, 4);
+                const updatedJson = JSON.stringify(jsonData, null, 4);
                 
                 fs.writeFile('tasks.json', updatedJson, 'utf8', (err) => {
                     if (err) {
@@ -107,14 +116,43 @@ function markDone(id) {
                     } else {
                         console.log(`"${task.taskName}" marked completed. (ID:${id})`);
                     }
+                    rl.prompt();
                 })
             } else {
                 console.log(`Task with id: ${id} not found.`)
+                rl.prompt();
             };
 
 
         } catch (parseError) {
             console.error('Error parsing JSON: ', parseError);
+            rl.prompt();
+        }
+    }
+)};
+
+// list all tasks function
+function listTasks() {
+    fs.readFile('tasks.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading file:', err);
+            rl.prompt();
+            return;
+        };
+
+        try {
+            jsonData = JSON.parse(data);
+            if (jsonData.length === 0) {
+                console.log('There are currently no tasks. Use "add" to create one.')
+            } else {
+            for (let i = 0; i < jsonData.length; i++) {
+                console.log(`${jsonData[i].taskName} - Status: ${jsonData[i].status} - Id: ${jsonData[i].id}`);
+            }}
+            rl.prompt()
+
+        } catch (parseError) {
+            console.error('Error parsing JSON: ', parseError);
+            rl.prompt();
         }
     }
 )};
@@ -145,7 +183,7 @@ rl.on('line', (line) => {
             const taskName = rest.join(' ');
 
             if (rest.length > 0) {
-                addTask('tasks.json', taskName);
+                addTask(taskName);
             } else {
                 console.log('No task added. Please provide a task name.');
             }
@@ -160,6 +198,10 @@ rl.on('line', (line) => {
             }
             break;
 
+        case 'list':
+            listTasks()
+            break;
+
         case 'mark-done':
 
             markDone(idArg);
@@ -170,5 +212,4 @@ rl.on('line', (line) => {
         break;
     }
 
-    rl.prompt()
 });
